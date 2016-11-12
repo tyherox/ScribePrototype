@@ -1,0 +1,46 @@
+{
+  "general": {
+    "doc": "path",
+    "layout": {},
+    "theme": "",
+    "new": "true"
+  },
+  "hub": {
+    "tooltip": "Settings for the editor",
+    "Menu Style": "inline",
+    "Open New Page On Start": "last",
+    "Show Invisible Characters": "no",
+    "Auto Save": "auto",
+    "Auto Correct": "yes",
+    "Auto Indent": "yes",
+    "Auto List": "yes"
+  },
+  "plugins": {
+    "tooltip": "Specific settings for various plug-ins"
+  },
+  "widgets": {
+    "tooltip": "General and specific settings for widgets",
+    "Toolbar": "hidden",
+    "Opacity": ".3",
+    "Font-size": "15",
+    "Font-family": "sans-serif",
+    "Contrast": ""
+  },
+  "keybindings": {
+    "tooltip": "Shortcuts for keyboard commands",
+    "copy": "",
+    "paste": "",
+    "redo": "",
+    "undo": "",
+    "cut": "",
+    "save": "",
+    "save as": "",
+    "open": "",
+    "hide": "",
+    "bold": "",
+    "underline": "",
+    "italics": "",
+    "find": "",
+    "replace": ""
+  }
+}

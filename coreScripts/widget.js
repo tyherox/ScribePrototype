@@ -49,16 +49,13 @@ function Widget(name, id, content){
         this.column = c;
         this.row = r;
 
-        //console.debug(c,',',r,",",self.id);
-        //console.debug("1!",self.element.getBoundingClientRect().left,",",self.element.getBoundingClientRect().top);
-
-        self.element.style.left =  self.element.getBoundingClientRect().left + "px";
-        self.element.style.top = self.element.getBoundingClientRect().top + "px";
+        //self.element.style.left =  self.element.getBoundingClientRect().left + "px";
+        //self.element.style.top = self.element.getBoundingClientRect().top + "px";
 
         //console.debug("Destination:",Layout.findX(c),Layout.findY(r));
 
-        var x = Layout.findX(c) - self.element.getBoundingClientRect().left;
-        var y = Layout.findY(r) - self.element.getBoundingClientRect().top;
+        var x = Layout.findX(c);
+        var y = Layout.findY(r);
 
         self.element.setAttribute('data-x', x);
         self.element.setAttribute('data-y', y);
@@ -327,16 +324,6 @@ function Widget(name, id, content){
                 Layout.toggle(false);
             })
             .actionChecker(function (pointer, event, action, interactable, element, interaction) {
-                if(action.name=='drag'){
-                    if(event.target.className == 'widgetToolbar' || event.target.className == 'widgetToolbarTitle'){
-                        action.name = 'drag';
-                    }
-                    else{
-                        return null;
-                    }
-                }
-                else if(action.name=='resize'){
-                }
                 return action;
             })
             .origin('parent');

@@ -18,6 +18,7 @@ var Mainframe = (function () {
         manualUpdate = [];
 
     var userDataPath = app.getPath('userData');
+    console.log(userDataPath);
     var packageDir = userDataPath+'/packages',
         layoutDir = userDataPath+'/layouts',
         themeDir = userDataPath+'/themes',
@@ -84,10 +85,25 @@ var Mainframe = (function () {
         var dir = layoutDir;
         var layoutData = fs.readdirSync(dir);
         layoutData.forEach(function(layout){
+
             var path = dir + "/" + layout;
-            if(Mainframe.path.extname(path) == '.json') {
-                var json = require(path);
-                layouts.push(json);
+            var stat = fs.statSync(path);
+            if (stat && stat.isDirectory()){
+                var packageFiles = fs.readdirSync(path);
+                var layout = {json:null,portrait:null};
+                packageFiles.forEach(function (file) {
+                    // Full path of that file
+                    let cPath = path + "/" + file;
+                    console.log("LAYOUT:",cPath);
+                    if(Mainframe.path.extname(cPath) == '.json') {
+                        console.log("FOUND JSON");
+                        layout.json = require(cPath);
+                    }
+                    if(Mainframe.path.basename(cPath) == 'portrait.png') {
+                        layout.portrait = cPath;
+                    }
+                });
+                layouts.push(layout);
             }
         });
         console.debug("Gathered Layouts");

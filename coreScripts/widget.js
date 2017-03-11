@@ -52,7 +52,7 @@ function Widget(name, id, content){
         //self.element.style.left =  self.element.getBoundingClientRect().left + "px";
         //self.element.style.top = self.element.getBoundingClientRect().top + "px";
 
-        //console.debug("Destination:",Layout.findX(c),Layout.findY(r));
+        console.debug("Destination:",Layout.findX(c),Layout.findY(r));
 
         var x = Layout.findX(c);
         var y = Layout.findY(r);
@@ -63,10 +63,6 @@ function Widget(name, id, content){
         //console.debug("Dif:",x,y);
 
         self.element.style.webkitTransform = 'translate(' + x + 'px, ' + y + 'px)';
-
-        self.element.addEventListener('transitionend',function(){
-            //console.debug("2!",self.element.getBoundingClientRect().left,",",self.element.getBoundingClientRect().top);
-        });
 
         //console.debug("SET LOC");
     };
@@ -324,6 +320,16 @@ function Widget(name, id, content){
                 Layout.toggle(false);
             })
             .actionChecker(function (pointer, event, action, interactable, element, interaction) {
+                if(action.name=='drag'){
+                    if(event.target.className == 'widgetToolbar' || event.target.className == 'widgetToolbarTitle'){
+                        action.name = 'drag';
+                    }
+                    else{
+                        return null;
+                    }
+                }
+                else if(action.name=='resize'){
+                }
                 return action;
             })
             .origin('parent');

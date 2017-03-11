@@ -85,25 +85,11 @@ var Mainframe = (function () {
         var dir = layoutDir;
         var layoutData = fs.readdirSync(dir);
         layoutData.forEach(function(layout){
-
-            var path = dir + "/" + layout;
-            var stat = fs.statSync(path);
-            if (stat && stat.isDirectory()){
-                var packageFiles = fs.readdirSync(path);
-                var layout = {json:null,portrait:null};
-                packageFiles.forEach(function (file) {
-                    // Full path of that file
-                    let cPath = path + "/" + file;
-                    console.log("LAYOUT:",cPath);
-                    if(Mainframe.path.extname(cPath) == '.json') {
-                        console.log("FOUND JSON");
-                        layout.json = require(cPath);
-                    }
-                    if(Mainframe.path.basename(cPath) == 'portrait.png') {
-                        layout.portrait = cPath;
-                    }
-                });
-                layouts.push(layout);
+            var path = Mainframe.path.join(dir,layout);
+            if(Mainframe.path.extname(path) == '.json') {
+                var json = require(path);
+                layouts.push(json);
+                console.log("FOUND NEW LAYOUT");
             }
         });
         console.debug("Gathered Layouts");

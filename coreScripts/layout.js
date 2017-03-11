@@ -320,7 +320,7 @@ var Layout = (function () {
             }, false);
             addedWidgets.push(widget);
 
-            if(widget.resizeListener!=null) widget.resizeListener();
+            //if(widget.resizeListener!=null) widget.resizeListener();
         },
 
         /**

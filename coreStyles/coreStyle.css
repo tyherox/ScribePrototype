@@ -54,12 +54,14 @@ body{
 }
 
 .widgetContainer {
-    width: 100%;
-    height: 100%;
+    width:calc(100% - 2px);
+    height: calc(100% - 27px);
     position:absolute;
-    top:0px;
-    left:0px;
+    top:26px;
+    left:1px;
 
+    margin-right: 1px;
+    margin-bot: 1px;
     overflow: auto;
     overflow-x:hidden;
 }

@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "A Customizable Writing Program",
   "devDependencies": {
+    "electron": "^1.6.2",
     "electron-packager": "^7.0.2",
     "electron-prebuilt": "^1.2.3",
     "electron-rebuild": "^1.1.3",

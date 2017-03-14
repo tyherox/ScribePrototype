@@ -7,7 +7,7 @@ testingRect = null;
 
 function Hub(){
     var self = this;
-    Mainframe.cssLoader('node_modules/packages/Hub/style.css');
+    Mainframe.cssLoader('packages/Hub/style.css');
     var mainConfig = new Mainframe.electronSettings({configFileName:'config',configDirPath: Mainframe.packageDir +"/0"});
 
     //Create writing area using MIT licensed library prosemirror (http://prosemirror.net).

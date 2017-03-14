@@ -12,5 +12,4 @@ module.exports = function(file){
     else{
         console.debug("CSS link null value");
     }
-
 }

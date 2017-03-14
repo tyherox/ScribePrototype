@@ -18,89 +18,101 @@ var Mainframe = (function () {
         manualUpdate = [];
 
     var userDataPath = app.getPath('userData');
-    console.log(userDataPath);
-    var packageDir = userDataPath+'/packages',
-        layoutDir = userDataPath+'/layouts',
-        themeDir = userDataPath+'/themes',
-        pluginDir = userDataPath+'/plugins',
-        settingDir = userDataPath+'/settings';
+    var packageDir = path.join(userDataPath,'packages'),
+        layoutDir = path.join(userDataPath,'layouts'),
+        themeDir = path.join(userDataPath,'themes'),
+        pluginDir = path.join(userDataPath,'plugins'),
+        settingDir = path.join(userDataPath,'settings');
 
-    if (!fs.existsSync(userDataPath+'/packages')){
+    if (!fs.existsSync(packageDir)){
         fs.mkdirSync(packageDir);
     }
-    if (!fs.existsSync(userDataPath+'/layouts')){
+    if (!fs.existsSync(layoutDir)){
         fs.mkdirSync(layoutDir);
     }
-    if (!fs.existsSync(userDataPath+'/themes')){
+    if (!fs.existsSync(themeDir)){
         fs.mkdirSync(themeDir);
     }
-    if (!fs.existsSync(userDataPath+'/plugins')){
+    if (!fs.existsSync(pluginDir)){
         fs.mkdirSync(pluginDir);
     }
-    if (!fs.existsSync(userDataPath+'/settings')){
+    if (!fs.existsSync(settingDir)){
         fs.mkdirSync(settingDir);
     }
 
     const ElectronSettings = require('electron-settings');
 
-    var defaultConfig = new ElectronSettings({configFileName: 'config', configDirPath: app.getAppPath() + "/coreScripts"});
-    var config = new ElectronSettings({configFileName: 'config', configDirPath: settingDir + "/coreScripts"});
+    var defaultConfig = new ElectronSettings({configFileName: 'config', configDirPath: path.join(app.getAppPath(),"coreScripts")});
+    var config = new ElectronSettings({configFileName: 'config', configDirPath: path.join(settingDir,"coreScripts")});
     if(!config.get('general')){
         config.set('.',defaultConfig.get('.'));
     }
 
     if(config.get())
 
-    var gatherWidgets = function(){
+        var gatherWidgets = function(){
 
-        var dir = Mainframe.path.join(__dirname, '/node_modules/packages');
-
-        var packages = fs.readdirSync(dir);
-        packages.forEach(function(packageDir){
-            var path = dir + "/" + packageDir;
-            var stat = fs.statSync(path);
-            if (stat && stat.isDirectory() && Mainframe.path.basename(path)!="Hub"){
-                var packageFiles = fs.readdirSync(path);
-                var widget = {main:null,json:null,portrait:null};
-                packageFiles.forEach(function (file) {
-                    // Full path of that file
-                    let cPath = path + "/" + file;
-                    // Get the file's stats
-                    if(Mainframe.path.basename(cPath) == 'main.js') {
-                        widget.main = require(Mainframe.path.basename(dir) + "/" + Mainframe.path.basename(path) + "/" + file);
-                    }
-                    if(Mainframe.path.basename(cPath) == 'package.json') {
-                        widget.json = require(Mainframe.path.basename(dir) + "/" + Mainframe.path.basename(path) + "/" + file);
-                    }
-                    if(Mainframe.path.basename(cPath) == 'icon.png') {
-                        widget.portrait = Mainframe.path.basename(dir) + "/" + Mainframe.path.basename(path) + "/" + file;
-                    }
-                });
-                widgets.push(widget);
-            }
-        });
-    }
+            var dir = Mainframe.path.join(__dirname,'packages');
+            var packages = fs.readdirSync(dir);
+            packages.forEach(function(packageDir){
+                var path = Mainframe.path.join(dir,packageDir);
+                var stat = fs.statSync(path);
+                if (stat && stat.isDirectory() && Mainframe.path.basename(path)!="Hub"){
+                    var packageFiles = fs.readdirSync(path);
+                    var widget = {main:null,json:null,portrait:null};
+                    packageFiles.forEach(function (file) {
+                        // Full path of that file
+                        let cPath = Mainframe.path.join(path,file);
+                        // Get the file's stats
+                        if(Mainframe.path.basename(cPath) == 'main.js') {
+                            console.log("PATH 1:", Mainframe.path.join("."+Mainframe.path.basename(dir),Mainframe.path.basename(path),file));
+                            widget.main = require(Mainframe.path.join(Mainframe.path.basename(dir),Mainframe.path.basename(path),file));
+                        }
+                        if(Mainframe.path.basename(cPath) == 'package.json') {
+                            widget.json = require(Mainframe.path.join(Mainframe.path.basename(dir),Mainframe.path.basename(path),file));
+                        }
+                        if(Mainframe.path.basename(cPath) == 'icon.png') {
+                            var test = Mainframe.path.join(Mainframe.path.basename(dir),Mainframe.path.basename(path), file).replace(/\\/g,"/");
+                            widget.portrait = test;
+                        }
+                    });
+                    widgets.push(widget);
+                }
+            });
+        }
 
     var gatherLayouts = function(){
         var dir = layoutDir;
         var layoutData = fs.readdirSync(dir);
         layoutData.forEach(function(layout){
-            var path = Mainframe.path.join(dir,layout);
-            if(Mainframe.path.extname(path) == '.json') {
-                var json = require(path);
-                layouts.push(json);
-                console.log("FOUND NEW LAYOUT");
+
+            var path = dir + "/" + layout;
+            var stat = fs.statSync(path);
+            if (stat && stat.isDirectory()){
+                var packageFiles = fs.readdirSync(path);
+                var layout = {json:null,portrait:null};
+                packageFiles.forEach(function (file) {
+                    // Full path of that file
+                    let cPath = path + "/" + file;
+                    console.log("LAYOUT:",cPath);
+                    if(Mainframe.path.extname(cPath) == '.json') {
+                        console.log("FOUND JSON");
+                        layout.json = require(cPath);
+                    }
+                });
+                layouts.push(layout);
             }
+            console.log("uhh.. layout?");
         });
         console.debug("Gathered Layouts");
     }
 
     var gatherThemes = function(){
-        var dir = Mainframe.path.join(__dirname, '/node_modules/themes');
+        var dir = Mainframe.path.join(__dirname, path.join("themes"));
 
         var packages = fs.readdirSync(dir);
         packages.forEach(function(packageDir){
-            var path = dir + "/" + packageDir;
+            var path = Mainframe.path.join(dir,packageDir);
             var stat = fs.statSync(path);
             if (stat && stat.isDirectory() && Mainframe.path.basename(path)!="Hub"){
                 var packageFiles = fs.readdirSync(path);
@@ -108,17 +120,17 @@ var Mainframe = (function () {
                 packageFiles.forEach(function
                     (file) {
                     // Full path of that file
-                    let cPath = path + "/" + file;
+                    let cPath = Mainframe.path.join(path,file);
                     // Get the file's stats
                     if(Mainframe.path.basename(cPath) == 'theme.css') {
-                        theme.css = (dir + "/" + Mainframe.path.basename(path) + "/" + file);
+                        theme.css = Mainframe.path.join(dir,Mainframe.path.basename(path),file);
                         console.log(theme.css);
                     }
                     if(Mainframe.path.basename(cPath) == 'package.json') {
-                        theme.json = require(Mainframe.path.basename(dir) + "/" + Mainframe.path.basename(path) + "/" + file);
+                        theme.json = require(Mainframe.path.join(Mainframe.path.basename(dir),Mainframe.path.basename(path),file));
                     }
                     if(Mainframe.path.basename(cPath) == 'icon.png') {
-                        theme.portrait = Mainframe.path.basename(dir) + "/" + Mainframe.path.basename(path) + "/" + file;
+                        theme.portrait = Mainframe.path.join(Mainframe.path.basename(dir),Mainframe.path.basename(path),file);
                     }
                 });
                 themes.push(theme);
@@ -151,10 +163,10 @@ var Mainframe = (function () {
 
             if(config.get("general.theme")=="" || config.get("general.layout")=={}){
 
-                document.getElementById('themeCss').href = "node_modules/themes/Default/theme.css";
-                Mainframe.config.set('general.theme', document.getElementById('themeCss').href.toString());
+                document.getElementById('themeCss').href = path.join("themes","Default","theme.css");
+                Mainframe.config.set('general.theme', path.join("themes","Default","theme.css"));
 
-                var Hub = require('packages/Hub/main.js');
+                var Hub = require(path.join("packages","Hub","main.js"));
                 Hub.widget.setSize(4,5);
                 Hub.widget.column = 2;
                 Hub.widget.row = 0;
@@ -169,7 +181,7 @@ var Mainframe = (function () {
             else{
                 document.getElementById('themeCss').href = config.get("general.theme");
 
-                var Hub = require('packages/Hub/main.js');
+                var Hub = require(path.join('packages','Hub','main.js'));
                 Hub.widget.setSize(4,5);
                 Hub.widget.column = 2;
                 Hub.widget.row = 0;
@@ -198,12 +210,12 @@ var Mainframe = (function () {
                                 if(widget.resizeListener!=null) widget.resizeListener();;
                             }
                             /*if(val.child && datum.main.widget.createChild!=null){
-                                console.debug("CHILDREN at",duh);
-                                for(var key in config.get('general.layout.'+duh+".child")){
-                                    console.debug("CHILD!");
-                                    datum.main.widget.createChild(key,config.get('general.layout.'+duh+".child."+key));
-                                }
-                            }*/
+                             console.debug("CHILDREN at",duh);
+                             for(var key in config.get('general.layout.'+duh+".child")){
+                             console.debug("CHILD!");
+                             datum.main.widget.createChild(key,config.get('general.layout.'+duh+".child."+key));
+                             }
+                             }*/
                         });
                     }
                 }
@@ -216,10 +228,7 @@ var Mainframe = (function () {
 
                 // this would test for whichever key is 40 and the ctrl key at the same time
                 if (e.ctrlKey && e.keyCode == 76) {
-
-
                     console.debug("a 1 2 3 \n b 1 2 3 \n c 1 2 3");
-
                 }
             }
             // register the handler
@@ -270,29 +279,28 @@ var Mainframe = (function () {
         },
 
         getThemeAsset: function(){
-            var asset = path.join(config.get("general.theme"), "../" , "/assets/");
+            var asset = path.join(config.get("general.theme"), "../" , "assets");
             return asset;
         },
 
         setThemeIcon: function(name,elem,size,pos){
-            var asset = path.join(config.get("general.theme"), "../" , "/assets/" , name);
+            var asset = path.join(config.get("general.theme"), "../", "assets", name);
 
             if(!size) size = "80% 80%";
             if(!pos) pos = 'center';
-
-            elem.style.backgroundImage = "url(" + asset+ ")";
+            elem.style.backgroundImage = "url(" + asset.replace(/\\/g, "/")+ ")";
             //elem.style.backgroundColor = 'transparent';
             elem.style.backgroundRepeat = "no-repeat";
             elem.style.backgroundSize = size;
             elem.style.backgroundPosition = pos;
 
-            manualUpdate.push({element: elem, name: name, size: size, position: pos});
+            //manualUpdate.push({element: elem, name: name, size: size, position: pos});
             return asset;
         },
 
         updateTheme: function(theme){
             manualUpdate.forEach(function(data){
-                var bla = path.join(config.get("general.theme"), "/../../" ,theme,"/assets/" , data.name);
+                var bla = path.join(config.get("general.theme"), "/../../" ,theme,"assets" , data.name);
 
                 data.element.style.backgroundImage = "url(" + bla+ ")";
                 //data.element.style.backgroundColor = 'transparent';
@@ -322,7 +330,7 @@ var Mainframe = (function () {
         exists: function(file){
             fs.stat(file, function(err, stat) {
                 if(err == null) {
-                   return true
+                    return true
                 } else if(err.code == 'ENOENT') {
                     // file does not exist
                     fs.writeFile('log.txt', 'Some log\n');
@@ -339,7 +347,7 @@ var Mainframe = (function () {
         themeDir: themeDir,
         electronSettings: ElectronSettings,
         config: config,
-        cssLoader: require('util/cssLoader.js'),
+        cssLoader: require('./util/cssLoader.js'),
         interact: require('interact.js/dist/interact.js'),
         mui: require('mui/mui.js'),
         remote: remote,
